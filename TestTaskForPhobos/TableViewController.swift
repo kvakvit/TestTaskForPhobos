@@ -64,6 +64,16 @@ class TableViewController: UITableViewController {
         
         return cell
     }
+    
+    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        
+        let view = cell.contentView
+            view.layer.opacity = 0.1
+            UIView.animateWithDuration(1.4) {
+                view.layer.opacity = 1
+            
+        }
+    }
 
     
     
