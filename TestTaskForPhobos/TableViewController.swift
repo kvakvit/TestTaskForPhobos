@@ -7,10 +7,12 @@
 //
 
 import UIKit
+import CoreData
 
 class TableViewController: UITableViewController {
     
-    var feeds: [PhobosApi.Feed] = []
+    var feeds: [NSManagedObject] = []
+    var didAnimateCell:[NSIndexPath: Bool] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,7 +21,6 @@ class TableViewController: UITableViewController {
         backgroundView.alpha = 0.5
         
         self.tableView.backgroundView = backgroundView
-        self.tableView.contentInset = UIEdgeInsetsMake(20,0,0,0);
         
         self.tableView.estimatedRowHeight = 280
         self.tableView.rowHeight = UITableViewAutomaticDimension
@@ -28,14 +29,37 @@ class TableViewController: UITableViewController {
         refreshControl!.attributedTitle = NSAttributedString(string: "Идет обновление...")
         refreshControl!.addTarget(self, action: #selector(refresh), forControlEvents: UIControlEvents.ValueChanged)
         
-        refresh()
+        PhobosApi().fetchObjectsFromCache { (feeds: [NSManagedObject]) -> () in
+            if !feeds.isEmpty {
+                self.feeds = feeds
+                self.tableView.reloadData()
+                self.refreshControl!.endRefreshing()
+            } else {
+                self.refresh()
+            }
+        }
+
+        
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        
+        let topOffest = CGPointMake(0, -(self.tableView.contentInset.top+25))
+        self.tableView.contentOffset = topOffest
+        
     }
     
     func refresh() {
        
-        PhobosApi().fetchObjects { (feeds: [PhobosApi.Feed]) -> () in
-            self.feeds = feeds
-            self.tableView.reloadData()
+        PhobosApi().fetchObjectsFromServer { (feeds: [NSManagedObject], connectError: NSError?) -> () in
+            if connectError == nil {
+                self.title = "Ваши траты:"
+                self.feeds += feeds
+                self.tableView.reloadData()
+            } else {
+                self.title = "Ваши траты: (Ошибка загрузки)"
+                
+            }
             self.refreshControl!.endRefreshing()
         }
         
@@ -48,7 +72,7 @@ class TableViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
+        
         return feeds.count
     }
     
@@ -60,17 +84,21 @@ class TableViewController: UITableViewController {
         
         cell.selectionStyle = UITableViewCellSelectionStyle.None
         
-        cell.createFeed(feeds[indexPath.row])
+        cell.createFeed(feeds[feeds.count-1 - indexPath.row])
         
         return cell
     }
     
     override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
         
-        let view = cell.contentView
+        if didAnimateCell[indexPath] == nil || didAnimateCell[indexPath]! == false {
+            
+            didAnimateCell[indexPath] = true
+            let view = cell.contentView
             view.layer.opacity = 0.1
             UIView.animateWithDuration(1.4) {
                 view.layer.opacity = 1
+            }
             
         }
     }

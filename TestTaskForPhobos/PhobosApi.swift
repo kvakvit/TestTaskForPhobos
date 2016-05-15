@@ -9,61 +9,130 @@
 import Foundation
 import Alamofire
 import SwiftyJSON
+import CoreData
 
 class PhobosApi {
     
     let url = "http://mobile165.hr.phobos.work/list"
     
-    struct Feed {
+    func fetchObjectsFromServer(callback: ([NSManagedObject], connectError: NSError?) -> Void) {
         
-        let amount: String
-        let details: String
-        let comment: String
-        let categoryName: String
-        let happened_at: String
-        
-    }
-    
-    func fetchObjects(callback: ([Feed]) -> Void) {
         request(.GET, url).responseJSON { (response) -> Void in
             switch response.result {
             case .Success(let data):
                 let json = JSON(data)
                 self.populateObjects(json, callback: callback)
             case .Failure(let error):
-                self.generateError(error, callback: callback)
+                callback([], connectError: error)
             }
         }
         
     }
     
-    func populateObjects(json: JSON, callback: ([Feed]) -> Void) {
+    func fetchObjectsFromCache(callback: ([NSManagedObject]) -> Void) {
         
-        var objects = [Feed]()
+        let appDelegate =
+            UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
+        
+        let fetchRequest = NSFetchRequest(entityName:"Feed")
+        
+        do {
+            let fetchedResults = try managedContext.executeFetchRequest(fetchRequest) as! [NSManagedObject]
             
+                callback(fetchedResults)
+            
+        } catch {
+            let fetchError = error as NSError
+            print(fetchError)
+        }
+        
+    }
+    
+    func populateObjects(json: JSON, callback: ([NSManagedObject], connectError: NSError?) -> Void) {
+        
+        var objects = [NSManagedObject]()
+        
+        let appDelegate =
+            UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
+        
+        let entity =  NSEntityDescription.entityForName("Feed",                                           inManagedObjectContext: managedContext)
+        
+        
         for var i = 3; i <= 5; i += 1 {
         
             for feed in json["feed"]["2014-04-1\(i)"].arrayValue {
             
-                objects.append(Feed(amount: feed["money"]["amount"].stringValue + " RUB", details: feed["details"].stringValue, comment: feed["comment"].stringValue, categoryName: "Категория: " + feed["category"]["name"].stringValue, happened_at: dateStringFromUnixTime(feed["happened_at"].intValue)))
-        
+                let feedEntity =  NSManagedObject(entity: entity!,
+                                            insertIntoManagedObjectContext:managedContext)
+                
+                if !containsObjectInCache(feed) {
+                
+                    feedEntity.setValue(feed["id"].stringValue, forKey: "id")
+                    feedEntity.setValue(feed["money"]["amount"].stringValue + " RUB", forKey: "amount")
+                    feedEntity.setValue(feed["details"].stringValue, forKey: "details")
+                    feedEntity.setValue(feed["comment"].stringValue, forKey: "comment")
+                    feedEntity.setValue("Категория: " + feed["category"]["name"].stringValue, forKey: "categoryName")
+                    feedEntity.setValue(dateStringFromUnixTime(feed["happened_at"].intValue), forKey: "happened_at")
+                
+                
+                    do {
+                    
+                        try feedEntity.managedObjectContext?.save()
+                    
+                    } catch {
+                        let fetchError = error as NSError
+                        print(fetchError)
+                    }
+                    
+                
+                    objects.append(feedEntity)
+                }
+                
             }
         
         }
         
-        callback(objects)
+        callback(objects, connectError: nil)
         
     }
     
-    func generateError(error: NSError, callback: ([Feed]) -> Void) {
+    func containsObjectInCache(feed: JSON) -> Bool {
         
-        var objects = [Feed]()
+        let appDelegate =
+            UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
         
-        objects.append(Feed(amount: error.localizedDescription, details: "Сбой!", comment: "Ошибка загрузки данных", categoryName: "", happened_at: ""))
+        let fetchRequest = NSFetchRequest(entityName:"Feed")
         
-        callback(objects)
+        let predicate1 = NSPredicate(format:"id == %@", feed["id"].stringValue)
+        let predicate2 = NSPredicate(format:"happened_at == %@", dateStringFromUnixTime(feed["happened_at"].intValue))
+        let compound = NSCompoundPredicate.init(andPredicateWithSubpredicates: [predicate1, predicate2])
         
+        fetchRequest.predicate = compound
+        
+        var fetchedResults: [NSManagedObject] = []
+        
+        do {
+            
+            fetchedResults = try managedContext.executeFetchRequest(fetchRequest) as! [NSManagedObject]
+            
+        } catch {
+            
+            let fetchError = error as NSError
+            print(fetchError)
+            
+        }
+        
+        if !fetchedResults.isEmpty {
+            return true
+        } else {
+            return false
+        }
+
     }
+    
     
     func dateStringFromUnixTime(unixTime: Int) -> String {
         

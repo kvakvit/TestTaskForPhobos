@@ -9,7 +9,6 @@
         <!--Ваши траты:-->
         <scene sceneID="qxt-wc-f6K">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="WpT-Hb-erB" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tableViewController id="0g9-Ql-vyl" customClass="TableViewController" customModule="TestTaskForPhobos" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="233" sectionHeaderHeight="28" sectionFooterHeight="28" id="FwC-fM-kEg">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
@@ -17,13 +16,13 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="FeedCell" rowHeight="233" id="cvD-6R-cUY" customClass="TableViewCell" customModule="TestTaskForPhobos" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="92" width="600" height="246"/>
+                                <rect key="frame" x="0.0" y="92" width="600" height="233"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="cvD-6R-cUY" id="4Bg-tq-AJy">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="245"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="233"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xio-Ix-pQX">
+                                        <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xio-Ix-pQX">
                                             <rect key="frame" x="58" y="0.0" width="473" height="245"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Категория" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Epx-jx-bea">
@@ -175,9 +174,6 @@
                                                     <exclude reference="tsY-Ho-Do4"/>
                                                 </mask>
                                                 <mask key="constraints">
-                                                    <exclude reference="5DO-4S-eNK"/>
-                                                    <exclude reference="BU8-jp-r58"/>
-                                                    <exclude reference="N5v-6E-g7o"/>
                                                     <exclude reference="QPE-cf-kq5"/>
                                                     <exclude reference="exz-5Q-aSS"/>
                                                     <exclude reference="jUt-aT-XME"/>
@@ -189,6 +185,9 @@
                                                     <exclude reference="LJe-9e-5I6"/>
                                                     <exclude reference="mPy-cz-rss"/>
                                                     <exclude reference="uRq-29-Tyh"/>
+                                                    <exclude reference="5DO-4S-eNK"/>
+                                                    <exclude reference="BU8-jp-r58"/>
+                                                    <exclude reference="N5v-6E-g7o"/>
                                                     <exclude reference="eNl-fc-hjb"/>
                                                     <exclude reference="kVD-0a-kZn"/>
                                                     <exclude reference="p8y-KC-qAA"/>
@@ -205,9 +204,6 @@
                                                     <include reference="tsY-Ho-Do4"/>
                                                 </mask>
                                                 <mask key="constraints">
-                                                    <include reference="5DO-4S-eNK"/>
-                                                    <include reference="BU8-jp-r58"/>
-                                                    <include reference="N5v-6E-g7o"/>
                                                     <include reference="QPE-cf-kq5"/>
                                                     <include reference="exz-5Q-aSS"/>
                                                     <include reference="jUt-aT-XME"/>
@@ -219,6 +215,9 @@
                                                     <include reference="LJe-9e-5I6"/>
                                                     <include reference="mPy-cz-rss"/>
                                                     <include reference="uRq-29-Tyh"/>
+                                                    <include reference="5DO-4S-eNK"/>
+                                                    <include reference="BU8-jp-r58"/>
+                                                    <include reference="N5v-6E-g7o"/>
                                                     <include reference="eNl-fc-hjb"/>
                                                     <include reference="kVD-0a-kZn"/>
                                                     <include reference="p8y-KC-qAA"/>
@@ -268,6 +267,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Ваши траты:" id="Dc8-8z-7Cb"/>
                 </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WpT-Hb-erB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="994.5" y="-582"/>
         </scene>
